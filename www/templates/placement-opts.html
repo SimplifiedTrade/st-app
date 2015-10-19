@@ -1,0 +1,106 @@
+<ion-view view-title="Placement Options">
+	<ion-content padding="true">
+		<h1>Select Placement Options</h1>
+		<h3>Type: {{ placementType | lodash:'capitalize' }}</h3>
+
+		<div class="list">
+
+			<!-- Shelf Size -->
+			<div ng-if="placementType === 'shelf'">
+				<div class="item item-divider">Size</div>
+				<label class="item item-input item-floating-label">
+					<span class="input-label"># of Shelves</span>
+					<input type="number" placeholder="# of Shelves">
+				</label>
+				<label class="item item-input item-floating-label">
+					<span class="input-label">Length</span>
+					<input type="number" placeholder="Height">
+				</label>
+			</div>
+
+			<!-- Placement Condition -->
+			<div ng-if="( ['rack','floorstack','shipper'] | filter:placementType ).length !== 0">
+				<div class="item item-divider">Placement Condition</div>
+				<label class="item item-radio">
+					<input type="radio" name="placementCondition">
+					<div class="item-content">Good</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="placementCondition">
+					<div class="item-content">Average</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="placementCondition">
+					<div class="item-content">Poor</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+			</div>
+			
+			<!-- Placement Side -->
+			<div ng-if="placementType === 'endcap'">
+				<div class="item item-divider">Placement Side</div>
+				<label class="item item-radio">
+					<input type="radio" name="placementSide">
+					<div class="item-content">Front</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="placementSide">
+					<div class="item-content">Side</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+			</div>
+
+			<!-- Position -->
+			<div ng-if="placementType === 'table'">
+				<div class="item item-divider">Position (relative to front of store)</div>
+				<label class="item item-radio">
+					<input type="radio" name="position">
+					<div class="item-content">Front</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="position">
+					<div class="item-content">Back</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="position">
+					<div class="item-content">Left</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="position">
+					<div class="item-content">Right</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+			</div>
+
+			<!-- Size -->
+			<div ng-if="placementType !== 'shelf'">
+				<div class="item item-divider">Size</div>
+				<label class="item item-radio">
+					<input type="radio" name="size">
+					<div class="item-content">Small</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="size">
+					<div class="item-content">Medium</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+				<label class="item item-radio">
+					<input type="radio" name="size">
+					<div class="item-content">Large</div>
+					<i class="radio-icon ion-checkmark"></i>
+				</label>
+			</div>
+
+		</div>
+
+		<button class="button button-block button-positive" ng-click="selectDept()">Next <i class="ion-chevron-right"></i></button>
+
+	</ion-content>
+</ion-view>

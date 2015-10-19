@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<widget id="com.ionicframework.app822945" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Simplified Trade</name>
+  <description>Mobile App for Simplified Trade.</description>
+  <author email="tony@simplifiedtrade.com" href="http://simplifiedtrade.com/">Simplified Trade Team</author>
+  <content src="index.html"/>
+  <access origin="*"/>
+  <preference name="webviewbounce" value="false"/>
+  <preference name="UIWebViewBounce" value="false"/>
+  <preference name="DisallowOverscroll" value="true"/>
+  <preference name="android-minSdkVersion" value="16"/>
+  <preference name="BackupWebStorage" value="none"/>
+  <preference name="xwalkVersion" value="14+"/>
+  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect"/>
+  <preference name="xwalkMode" value="embedded"/>
+  <feature name="StatusBar">
+    <param name="ios-package" onload="true" value="CDVStatusBar"/>
+  </feature>
+  <feature name="Badge">
+    <param name="ios-package" onload="true" value="Badge"/>
+    <param name="android-package" value="de.appplant.cordova.plugin.badge"/>
+  </feature>
+  <feature name="Camera">
+    <param name="ios-package" value="CDVCamera"/>
+    <param name="android-package" value="org.apache.cordova.camera.CameraLauncher"/>
+  </feature>
+</widget>

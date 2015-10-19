@@ -1,0 +1,13 @@
+node_modules
+www/lib
+*.keystore
+*.sw*
+platforms
+plugins
+.tmp
+.sass-cache
+coverage
+*.swp
+*.swo
+*.log
+*.DS_Store

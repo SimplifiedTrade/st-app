@@ -1,0 +1,12 @@
+<ion-view view-title="Take a Pic">
+	<ion-content padding="true">
+		<h1>Take Pic</h1>
+		
+		<img class="full-image" ng-show="!!picCaptured" ng-src="{{picCaptured}}" />
+
+		<button class="button button-block button-positive" ng-show="!picCaptured" ng-click="takePic()">Take Pic</button>
+		<button class="button button-block button-positive" ng-show="!!picCaptured" ng-click="takePic()">ReTake Pic</button>
+		<a class="button button-block button-balanced icon-right ion-chevron-right" ng-show="!!picCaptured" href="#/app/location">Next</a>
+		
+	</ion-content>
+</ion-view>
