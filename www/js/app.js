@@ -97,6 +97,15 @@
 						controller: "PostMortemCtrl"
 					}
 				}
+			})
+			.state( "app.summary", {
+				url: "/summary",
+				views: {
+					"menuContent": {
+						templateUrl: "templates/summary.html",
+						controller: "SummaryCtrl"
+					}
+				}
 			});
 		
 		

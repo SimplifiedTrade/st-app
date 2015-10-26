@@ -1,9 +1,25 @@
 <ion-view view-title="Select Location">
-	<ion-content padding="false">
+	
+	<div class="bar bar-subheader bar-stable item-input-inset">
+		<label class="item-input-wrapper">
+			<i class="icon ion-ios-search"></i>
+			<input type="search" placeholder="Search Location" ng-model="locationFilter" ng-change="scrollTop()">
+		</label>
+	</div>
+	
+	<ion-content has-bouncing="true" padding="false" class="has-subheader">
+	
+		<div ng-show="coordsLoading">Loading Coords...</div>
 
-		<ion-list>
-			<ion-item ng-repeat="item in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" class="item item-icon-right" item="item" ng-click="selectLocation(item)" ng-tap="selectLocation(item)">
-				{{item}}
+		<ion-list ng-show="!coordsLoading">
+			<ion-item ng-repeat="item in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] | filter:locationFilter" class="item item-icon-right" item="item" ng-click="selectLocation(item)" ng-tap="selectLocation(item)">
+				Store Location #{{item}}
+				
+				
+				<div ng-show="coords !== null">
+					<p>Lat: {{coords.lat}} | Long: {{coords.long}}</p>
+				</div>
+				
 				<i class="icon ion-chevron-right icon-accessory"></i>
 			</ion-item>
 		</ion-list>
@@ -11,4 +27,5 @@
 		
 	</ion-content>
 </ion-view>
+
 
