@@ -5,13 +5,14 @@
 		"strade.global.services",
 		"strade.global.filters",
 		"ngCordova.plugins.badge",
-		"ngCordova.plugins.camera"
+		"ngCordova.plugins.camera",
+		"ngCordova.plugins.barcodeScanner"
 	]);
 	
-	
+		
 	module.run( function( $window, $rootScope, $ionicPlatform, $state, $stateParams ) {
 		var win = $window;
-	
+			
 		$rootScope.dataModelPristine = {
 			takePic: {
 				photoBase64: null,
@@ -19,15 +20,20 @@
 				placement: {
 					lifecycle: null,
 					type: null,
-					options: null
+					options: null,
+					position: null
 				},
-				department: null,
-				category: null,
-				subCategory: null,
-				postMortem: {
-					comments: null,
-					issues: null,
-					resolutions: null
+				barcodeScan: {},
+				meta: {
+					caseCondition: null,
+					brand: null,
+					conditionTypes: null,
+					fixed: null,
+					time: null,
+					missing: null,
+					store: null,
+					space: null,
+					other: null
 				}
 			}
 		};
@@ -41,6 +47,7 @@
 		};
 		
 		$rootScope.resetDataModel();
+
 
 	});
 	
@@ -83,41 +90,25 @@
 		};
 	});
 
-	module.controller( "TakePicCtrl", function( $scope, $cordovaCamera ) {
+	module.controller( "NewCaseCtrl", function( $scope, $rootScope, $state ) {
 
-		var options = {
-			quality: 50,
-			destinationType: Camera.DestinationType.DATA_URL,
-			sourceType: Camera.PictureSourceType.CAMERA,
-			allowEdit: false,
-			encodingType: Camera.EncodingType.JPEG,
-			// targetWidth: 200,
-			// targetHeight: 200,
-			popoverOptions: CameraPopoverOptions,
-			// saveToPhotoAlbum: false,
-			correctOrientation:true
-		};
+		$scope.startNewCase = function() {
+			$state.go( "app.location" );
 
-		$scope.takePic = function() {
-			$cordovaCamera.getPicture( options ).then( function( imageData ) {
-				$scope.picCaptured = "data:image/jpeg;base64," + imageData;
-			}, function( err ) {
-				// error
-
-				console.info( "IMAGE CAPTURE ERROR: ", err );
-
-			});
 		};
 
 	});
-
-	module.controller( "LocationCtrl", function( $scope, $state, $cordovaGeolocation, $ionicLoading ) {
+	
+	module.controller( "LocationCtrl", function( $scope, $rootScope, $state, $cordovaGeolocation, $ionicLoading ) {
 
 		var posOptions = {
 				timeout: 10000,
 				enableHighAccuracy: false
 			};
 
+		$scope.data = {
+			location: $rootScope.dataModel.takePic.location
+		};
 
 		ng.extend( $scope, {
 			coords: {},
@@ -128,8 +119,9 @@
 			selectLocation: function( loc ) {
 
 				console.info( "ITEM SELECTED: ", loc );
+				$scope.data.location = loc;
 
-				$state.go( "app.placementType", { location: loc } );
+				$state.go( "app.takePic" );
 			}
 		});
 
@@ -137,8 +129,6 @@
 		$scope.getLoc().then( function( position ) {
 			var lat = position.coords.latitude,
 				long = position.coords.longitude;
-			
-			
 		
 			$scope.coords = {
 				lat: lat,
@@ -180,21 +170,70 @@
 			// watch.clearWatch();
 		};
 		*/
-
-
-
-
 	});
+	
+	module.controller( "TakePicCtrl", function( $scope, $rootScope, $state, $cordovaCamera, $window ) {
 
-	module.controller( "PlacementTypeCtrl", function( $scope, $state ) {
+		var options = {},
+			hasCamera = !!$window.Camera;
+			
+		$scope.data = {
+			photoBase64: $rootScope.dataModel.takePic.photoBase64
+		};
 
-		$scope.selectPlacement = function( type ) {
-			$state.go( "app.placementOpts", { type: type } );
+		if ( hasCamera ) {
+			options = {
+				quality: 50,
+				destinationType: Camera.DestinationType.DATA_URL,
+				sourceType: Camera.PictureSourceType.CAMERA,
+				allowEdit: false,
+				encodingType: Camera.EncodingType.JPEG,
+				// targetWidth: 200,
+				// targetHeight: 200,
+				popoverOptions: CameraPopoverOptions,
+				// saveToPhotoAlbum: false,
+				correctOrientation:true
+			};			
+		}
+
+		$scope.takePic = function() {
+			$cordovaCamera.getPicture( options ).then( function( imageData ) {
+				// $scope.picCaptured = "data:image/jpeg;base64," + imageData;
+								
+				$rootScope.dataModel.takePic.photoBase64 = $scope.data.photoBase64 = imageData;
+				
+			}, function( err ) {
+				// error
+
+				console.info( "IMAGE CAPTURE ERROR: ", err );
+
+			});
+		};
+		
+		$scope.savePic = function() {
+			
+			$state.go( "app.placementType" );
 		};
 
 	});
 
-	module.controller( "PlacementOptsCtrl", function( $scope, $state, $stateParams, lodash ) {
+	module.controller( "PlacementTypeCtrl", function( $scope, $rootScope, $state ) {
+
+		$scope.data = {
+			placement: $rootScope.dataModel.takePic.placement
+		};
+
+		$scope.savePlacement = function() {
+			$state.go( "app.placementOpts", { type: $rootScope.dataModel.takePic.placement.type } );
+		};
+
+	});
+
+	module.controller( "PlacementOptsCtrl", function( $scope, $rootScope, $state, $stateParams, lodash ) {
+
+		$scope.data = {
+			placement: $rootScope.dataModel.takePic.placement
+		};
 
 		ng.extend( $scope, {
 			placementType: $stateParams.type
@@ -202,12 +241,12 @@
 
 
 		$scope.selectDept = function() {
-			$state.go( "app.dept" );
+			$state.go( "app.placementPosition" );
 		};
 
 	});
 
-	module.controller( "DeptCtrl", function( $scope, $state, $stateParams, lodash ) {
+	module.controller( "DeptCtrl", function( $scope, $rootScope, $state, $stateParams, lodash ) {
 
 		$scope.placementType = ( $stateParams.type );
 
@@ -218,23 +257,92 @@
 
 	});
 
-	module.controller( "PlacementPositionCtrl", function( $scope, $state ) {
+	module.controller( "PlacementPositionCtrl", function( $scope, $rootScope, $state ) {
 
 
 		$scope.selectPlacementPos = function( type ) {
-			$state.go( "app.postMortem" );
+			
+			$rootScope.dataModel.takePic.placement.position = type;
+			
+			$state.go( "app.scanBarcode" );
 		};
 
 	});
+	
+	module.controller( "ScanBarcodeCtrl", function( $scope, $rootScope, $state, $cordovaBarcodeScanner ) {
+		
+		
+		$scope.data = {
+			barcodeScan: $rootScope.dataModel.takePic.barcodeScan
+		};
 
-	module.controller( "PostMortemCtrl", function( $scope, $state ) {
+		console.info( "$cordovaBarcodeScanner: ", JSON.stringify( $cordovaBarcodeScanner ) );
+		
+		$scope.doScan = function() {
+			
+			$cordovaBarcodeScanner.scan().then( function( scanData ) {
+				if ( !scanData.cancelled ) {
+					$scope.barcodeScanned = true;
+					
+					$rootScope.dataModel.takePic.barcodeScan = $scope.data.barcodeScan = scanData;
+					
+					console.info( "imageData: ", JSON.stringify( scanData ) );
+					
+				} else {
+					// Scan Cancelled
+					
+					
+				}
+				
+				
+			}, function( err ) {
+
+
+			}).finally( function() {
+				$scope.barcodeCaptured = false;
+				
+			});
+			
+		};
+		
+		$scope.skipBarcode = function() {
+			$state.go( "app.caseMeta" );
+		};
+
+		$scope.saveBarcode = function( type ) {
+			$state.go( "app.caseMeta" );
+		};
+	});
+	
+	module.controller( "CaseMetaCtrl", function( $scope, $rootScope, $state ) {
+				
+		$scope.data = {
+			placement: $rootScope.dataModel.takePic.placement,
+			meta: $rootScope.dataModel.takePic.meta
+		};
+		
+		
+		// DEBUG!!!!!
+		// $scope.data.placement.type = "shelf";
+		
+		
 
 		$scope.savePostMortem = function( type ) {
 			$state.go( "app.summary" );
 		};
 	});
 
-	module.controller( "SummaryCtrl", function( $scope, $state ) {
+	module.controller( "SummaryCtrl", function( $scope, $rootScope, $state ) {
+		
+		
+		var summary = ng.copy( $rootScope.dataModel.takePic );
+		
+		summary.photoBase64 = String( summary.photoBase64 ).substring( 0, 10 ).concat( "..." ).replace( "null", "" );
+		
+		$scope.data = {
+			summary: summary
+		}
+		
 		$scope.saveAll = function() {
 			$state.go( "app.home" );
 		};
@@ -248,14 +356,7 @@
 	});
 
 
-
-
-
-
-
 })( angular );
-
-
 
 
 

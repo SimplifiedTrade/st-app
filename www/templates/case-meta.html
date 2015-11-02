@@ -1,0 +1,91 @@
+<ion-view view-title="Case Description &amp; Info">
+	<ion-content has-bouncing="true" padding="true">
+
+		<div class="list">
+			
+			<div class="item item-divider">Case Condition</div>
+			<label class="item item-radio">
+				<input type="radio" name="caseCondition" ng-model="data.meta.caseCondition" value="issue" checked>
+				<div class="item-content">Issue</div>
+				<i class="radio-icon ion-checkmark"></i>
+			</label>
+			<label class="item item-radio">
+				<input type="radio" name="caseCondition" ng-model="data.meta.caseCondition" value="win">
+				<div class="item-content">Win</div>
+				<i class="radio-icon ion-checkmark"></i>
+			</label>
+			
+			<div class="item item-divider">Brand Details</div>
+			<label class="item item-input item-floating-label">
+				<span class="input-label">Brand</span>
+				<input type="text" placeholder="Brand" ng-model="data.meta.brand">
+			</label>
+			
+			<div ng-if="( ['shelf','table','endcap'] | filter: data.placement.type ).length !== 0 && data.meta.caseCondition === 'issue'">
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 0 ].option">Out of Stock</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 1 ].option">Damage</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 2 ].option">Tag</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 3 ].option">Not in Set</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 4 ].option">Rotation</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 5 ].option">Out of Code</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 6 ].option">Incorrect Placement</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 7 ].option">Other</ion-checkbox>
+				<label ng-show="!!data.meta.conditionTypes[ 7 ].option" class="item item-input item-floating-label">
+					<span class="input-label">Other (Please Specify)</span>
+					<textarea placeholder="Other (Please Specify)" ng-model="data.meta.conditionTypes[ 7 ].reason"></textarea>
+				</label>
+			</div>
+			<div ng-if="( ['display','rack','floorstack'] | filter: data.placement.type ).length !== 0 && data.meta.caseCondition === 'issue'">
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 8 ].option">Setup</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 9 ].option">Not Executed</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 10 ].option">Placement</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 11 ].option">Other</ion-checkbox>
+				<label ng-show="!!data.meta.conditionTypes[ 11 ].option" class="item item-input item-floating-label">
+					<span class="input-label">Other (Please Specify)</span>
+					<textarea placeholder="Other (Please Specify)" ng-model="data.meta.conditionTypes[ 11 ].reason"></textarea>
+				</label>
+			</div>
+			
+			<div ng-if="( ['shelf','table','endcap'] | filter: data.placement.type ).length !== 0 && data.meta.caseCondition === 'win'">
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 12 ].option">Space</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 13 ].option">Location</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 14 ].option">Sku</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 15 ].option">Other</ion-checkbox>
+				<label ng-show="!!data.meta.conditionTypes[ 15 ].option" class="item item-input item-floating-label">
+					<span class="input-label">Other (Please Specify)</span>
+					<textarea placeholder="Other (Please Specify)" ng-model="data.meta.conditionTypes[ 15 ].reason"></textarea>
+				</label>
+			</div>
+			<div ng-if="( ['display','rack','floorstack'] | filter: data.placement.type ).length !== 0 && data.meta.caseCondition === 'win'">
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 16 ].option">Location</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 17 ].option">Placement</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 18 ].option">Size</ion-checkbox>
+				<ion-checkbox ng-model="data.meta.conditionTypes[ 19 ].option">Other</ion-checkbox>
+				<label ng-show="!!data.meta.conditionTypes[ 19 ].option" class="item item-input item-floating-label">
+					<span class="input-label">Other (Please Specify)</span>
+					<textarea placeholder="Other (Please Specify)" ng-model="data.meta.conditionTypes[ 19 ].reason"></textarea>
+				</label>
+			</div>
+			<div ng-show="data.meta.caseCondition === 'issue'">
+				<div class="item item-divider">Issue Status</div>
+				<ion-toggle ng-model="data.meta.issueFixed" toggle-class="toggle-calm">Issue fixed?</ion-toggle>
+				
+				<div ng-show="!data.meta.issueFixed">
+					<ion-checkbox ng-model="data.meta.unfixedReason[ 0 ].option">Time</ion-checkbox>
+					<ion-checkbox ng-model="data.meta.unfixedReason[ 1 ].option">Missing Product/Parts</ion-checkbox>
+					<ion-checkbox ng-model="data.meta.unfixedReason[ 2 ].option">Store</ion-checkbox>
+					<ion-checkbox ng-model="data.meta.unfixedReason[ 3 ].option">Space</ion-checkbox>
+					<ion-checkbox ng-model="data.meta.unfixedReason[ 4 ].option">Other</ion-checkbox>
+					<label ng-show="!!data.meta.unfixedReason[ 4 ].option" class="item item-input item-floating-label">
+						<span class="input-label">Other (Please Specify)</span>
+						<textarea placeholder="Other (Please Specify)" ng-model="data.meta.unfixedReason[ 4 ].reason"></textarea>
+					</label>
+				</div>
+			</div>			
+		</div>
+
+		<button class="button button-block button-positive" ng-click="savePostMortem()">Next <i class="ion-chevron-right"></i></button>
+
+
+	</ion-content>
+</ion-view>

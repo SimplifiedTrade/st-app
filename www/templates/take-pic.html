@@ -1,12 +1,12 @@
 <ion-view view-title="Take a Pic">
 	<ion-content has-bouncing="true" padding="true">
 		<h1>Take Pic</h1>
-		
-		<img class="full-image" ng-show="!!picCaptured" ng-src="{{picCaptured}}" />
+				
+		<img class="full-image" ng-show="!!data.photoBase64" ng-src="{{ 'data:image/jpeg;base64,' + data.photoBase64 }}" />
 
-		<button class="button button-block button-positive" ng-show="!picCaptured" ng-click="takePic()">Take Pic</button>
-		<button class="button button-block button-positive" ng-show="!!picCaptured" ng-click="takePic()">ReTake Pic</button>
-		<a class="button button-block button-balanced icon-right ion-chevron-right" ng-show="!!picCaptured" href="#/app/location">Next</a>
+		<button class="button button-block button-positive" ng-show="!data.photoBase64" ng-click="takePic()">Take Pic</button>
+		<button class="button button-block button-positive" ng-show="!!data.photoBase64" ng-click="takePic()">ReTake Pic</button>
+		<button class="button button-block button-positive" ng-show="!!data.photoBase64" ng-click="savePic()" ng-show="!!data.photoBase64">Next <i class="ion-chevron-right"></i></button>
 		
 	</ion-content>
 </ion-view>

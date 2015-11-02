@@ -2,65 +2,76 @@
 	<ion-content has-bouncing="true" padding="true">
 		<h1>Select Placement</h1>
 
-
 		<div>
 			<div class="item item-divider">Placement Lifecycle</div>
 			<label class="item item-radio">
-				<input type="radio" name="placementLifecycle" checked>
+				<input ng-model="data.placement.lifecycle" value="standard" type="radio" name="placementLifecycle" checked>
 				<div class="item-content">Standard</div>
 				<i class="radio-icon ion-checkmark"></i>
 			</label>
 			<label class="item item-radio">
-				<input type="radio" name="placementLifecycle">
+				<input ng-model="data.placement.lifecycle" value="incremental" type="radio" name="placementLifecycle">
 				<div class="item-content">Incremental</div>
 				<i class="radio-icon ion-checkmark"></i>
 			</label>
 		</div>
 
-
 		<div class="row">
 			<div class="col col-50">
-				<button class="button button-block button-calm" ng-click="selectPlacement('shelf')">
+				<button class="button button-block" ng-class="{'button-calm':(data.placement.type !== 'shelf'), 'button-balanced': (data.placement.type === 'shelf')}" ng-click="data.placement.type = 'shelf'">
 					<div class="icon ion-grid"></div>
 					Shelf
+					<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placement.type" value="shelf">
+					<label></label>
 				</button>
 			</div>
 			<div class="col col-50">
-				<button class="button button-block button-calm" ng-click="selectPlacement('rack')">
+				<button class="button button-block" ng-class="{'button-calm':(data.placement.type !== 'rack'), 'button-balanced': (data.placement.type === 'rack')}" ng-click="data.placement.type = 'rack'">
 					<div class="icon ion-navicon"></div>
 					Rack
-				</button>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col col-50">
-				<button class="button button-block button-calm" ng-click="selectPlacement('table')">
-					<div class="icon ion-cube"></div>
-					Table
-				</button>
-			</div>
-			<div class="col col-50">
-				<button class="button button-block button-calm" ng-click="selectPlacement('shipper')">
-					<div class="icon ion-social-dropbox-outline"></div>
-					Shipper
-				</button>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col col-50">
-				<button class="button button-block button-calm" ng-click="selectPlacement('stack')">
-					<div class="icon ion-drag"></div>
-					Stack
-				</button>
-			</div>
-			<div class="col col-50">
-				<button class="button button-block button-calm" ng-click="selectPlacement('endcap')">
-					<div class="icon ion-ios-browsers-outline"></div>
-					End-cap
+					<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placement.type" value="rack">
+					<label></label>
 				</button>
 			</div>			
 		</div>
+		<div class="row">
+			<div class="col col-50">
+				<button class="button button-block" ng-class="{'button-calm':(data.placement.type !== 'table'), 'button-balanced': (data.placement.type === 'table')}" ng-click="data.placement.type = 'table'">
+					<div class="icon ion-cube"></div>
+					Table
+					<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placement.type" value="table">
+					<label></label>
+				</button>
+			</div>
+			<div class="col col-50">
+				<button class="button button-block" ng-class="{'button-calm':(data.placement.type !== 'shipper'), 'button-balanced': (data.placement.type === 'shipper')}" ng-click="data.placement.type = 'shipper'">
+					<div class="icon ion-social-dropbox-outline"></div>
+					Shipper
+					<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placement.type" value="shipper">
+					<label></label>
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col col-50">
+				<button class="button button-block" ng-class="{'button-calm':(data.placement.type !== 'stack'), 'button-balanced': (data.placement.type === 'stack')}" ng-click="data.placement.type = 'stack'">
+					<div class="icon ion-drag"></div>
+					Stack
+					<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placement.type" value="stack">
+					<label></label>
+				</button>
+			</div>
+			<div class="col col-50">
+				<button class="button button-block" ng-class="{'button-calm':(data.placement.type !== 'endcap'), 'button-balanced': (data.placement.type === 'endcap')}" ng-click="data.placement.type = 'endcap'">
+					<div class="icon ion-ios-browsers-outline"></div>
+					End-cap
+					<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placement.type" value="endcap">
+					<label></label>
+				</button>
+			</div>
+		</div>
 
+		<button class="button button-block button-positive" ng-click="savePlacement()">Next <i class="ion-chevron-right"></i></button>
 		
 	</ion-content>
 </ion-view>

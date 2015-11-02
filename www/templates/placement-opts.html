@@ -2,7 +2,7 @@
 	<ion-content has-bouncing="true" padding="true">
 		<h1>Select Placement Options</h1>
 		<h3>Type: {{ placementType | lodash:'capitalize' }}</h3>
-
+		
 		<div class="list">
 
 			<!-- Shelf Size -->
@@ -10,11 +10,11 @@
 				<div class="item item-divider">Size</div>
 				<label class="item item-input item-floating-label">
 					<span class="input-label"># of Shelves</span>
-					<input type="number" placeholder="# of Shelves">
+					<input ng-model="data.placement.options.shelves.quantity" type="number" placeholder="# of Shelves">
 				</label>
 				<label class="item item-input item-floating-label">
 					<span class="input-label">Length</span>
-					<input type="number" placeholder="Length">
+					<input ng-model="data.placement.options.shelves.length" type="number" placeholder="Length">
 				</label>
 			</div>
 
@@ -22,17 +22,17 @@
 			<div ng-if="( ['rack','floorstack','shipper'] | filter:placementType ).length !== 0">
 				<div class="item item-divider">Placement Condition</div>
 				<label class="item item-radio">
-					<input type="radio" name="placementCondition">
+					<input ng-model="data.placement.options.condition" value="good" type="radio" name="placementCondition">
 					<div class="item-content">Good</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="placementCondition">
+					<input ng-model="data.placement.options.condition" value="average" type="radio" name="placementCondition">
 					<div class="item-content">Average</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="placementCondition">
+					<input ng-model="data.placement.options.condition" value="poor" type="radio" name="placementCondition">
 					<div class="item-content">Poor</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
@@ -42,12 +42,12 @@
 			<div ng-if="placementType === 'endcap'">
 				<div class="item item-divider">Placement Side</div>
 				<label class="item item-radio">
-					<input type="radio" name="placementSide">
+					<input ng-model="data.placement.options.side" value="front" type="radio" name="placementSide">
 					<div class="item-content">Front</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="placementSide">
+					<input ng-model="data.placement.options.side" value="side" type="radio" name="placementSide">
 					<div class="item-content">Side</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
@@ -57,22 +57,22 @@
 			<div ng-if="placementType === 'table'">
 				<div class="item item-divider">Position (relative to front of store)</div>
 				<label class="item item-radio">
-					<input type="radio" name="position">
+					<input ng-model="data.placement.options.position" value="front" type="radio" name="position">
 					<div class="item-content">Front</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="position">
+					<input ng-model="data.placement.options.position" value="back" type="radio" name="position">
 					<div class="item-content">Back</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="position">
+					<input ng-model="data.placement.options.position" value="left" type="radio" name="position">
 					<div class="item-content">Left</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="position">
+					<input ng-model="data.placement.options.position" value="right" type="radio" name="position">
 					<div class="item-content">Right</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
@@ -82,17 +82,17 @@
 			<div ng-if="placementType !== 'shelf'">
 				<div class="item item-divider">Size</div>
 				<label class="item item-radio">
-					<input type="radio" name="size">
+					<input ng-model="data.placement.options.size" value="small" type="radio" name="size">
 					<div class="item-content">Small</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="size">
+					<input ng-model="data.placement.options.size" value="medium" type="radio" name="size">
 					<div class="item-content">Medium</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>
 				<label class="item item-radio">
-					<input type="radio" name="size">
+					<input ng-model="data.placement.options.size" value="large" type="radio" name="size">
 					<div class="item-content">Large</div>
 					<i class="radio-icon ion-checkmark"></i>
 				</label>

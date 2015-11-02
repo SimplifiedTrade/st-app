@@ -35,6 +35,15 @@
 					}
 				}
 			})
+			.state( "app.newCase", {
+				url: "/new-case",
+				views: {
+					"menuContent": {
+						templateUrl: "templates/new-case.html",
+						controller: "NewCaseCtrl"
+					}
+				}
+			})
 			.state( "app.takePic", {
 				url: "/take-pic",
 				views: {
@@ -89,12 +98,21 @@
 					}
 				}
 			})
-			.state( "app.postMortem", {
-				url: "/post-mortem",
+			.state( "app.scanBarcode", {
+				url: "/scan-barcode",
 				views: {
 					"menuContent": {
-						templateUrl: "templates/post-mortem.html",
-						controller: "PostMortemCtrl"
+						templateUrl: "templates/scan-barcode.html",
+						controller: "ScanBarcodeCtrl"
+					}
+				}
+			})
+			.state( "app.caseMeta", {
+				url: "/case-meta",
+				views: {
+					"menuContent": {
+						templateUrl: "templates/case-meta.html",
+						controller: "CaseMetaCtrl"
 					}
 				}
 			})

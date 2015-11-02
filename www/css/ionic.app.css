@@ -9322,3 +9322,40 @@ a.button {
           vertical-align: middle;
           text-decoration: none;
           text-align: center; }
+
+/* hide input */
+input.rdo-chkbx:empty {
+  visibility: hidden;
+  position: absolute; }
+
+/* style label */
+input.rdo-chkbx:empty ~ label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  float: left;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+/* toggle on */
+input.rdo-chkbx:checked ~ label:before {
+  position: absolute;
+  top: -13px;
+  right: -12px;
+  content: '\2714';
+  text-indent: .9em;
+  color: green; }
+
+input.rdo-chkbx:checked ~ label {
+  color: #777;
+  font-size: 2em; }
+
+/* radio focus */
+input.rdo-chkbx:focus ~ label:before {
+  box-shadow: 0 0 0 3px #999; }

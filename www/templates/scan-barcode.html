@@ -1,0 +1,18 @@
+<ion-view view-title="Scan Barcode">
+	<ion-content has-bouncing="true" padding="true">
+
+		<p>Scan barcode to help us identify product Department and Categories.</p>
+		<p ng-show="!!barcodeScanned">Item successfully scanned!</p>
+		<p ng-show="!barcodeScanned && data.barcodeScan === false">There was a problem scanning your item, please try again.</p>
+
+		<p>DEBUG: {{ data.barcodeScan | json }}</p>
+		<p>DEBUG (ROOT): {{ $root.dataModel.takePic.barcodeScan | json }}</p>
+
+		<button class="button button-block button-positive" ng-show="!barcodeScanned" ng-click="doScan()">Scan Barcode</button>
+		<button class="button button-block button-assertive" ng-show="!barcodeScanned" ng-click="skipBarcode()">Skip Barcode</button>
+		<button class="button button-block button-positive" ng-show="!!barcodeScanned" ng-click="doScan()">Rescan Barcode</button>
+		<button class="button button-block button-positive" ng-show="!!barcodeScanned" ng-click="saveBarcode()" ng-show="!!barcodeScanned">Next <i class="ion-chevron-right"></i></button>		
+
+
+	</ion-content>
+</ion-view>
