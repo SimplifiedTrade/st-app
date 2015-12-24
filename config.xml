@@ -17,11 +17,19 @@
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>
   <feature name="Badge">
-    <param name="ios-package" onload="true" value="Badge"/>
     <param name="android-package" value="de.appplant.cordova.plugin.badge"/>
+    <param name="ios-package" onload="true" value="Badge"/>
   </feature>
   <feature name="Camera">
     <param name="ios-package" value="CDVCamera"/>
     <param name="android-package" value="org.apache.cordova.camera.CameraLauncher"/>
+  </feature>
+  <feature name="File">
+    <param name="android-package" value="org.apache.cordova.FileUtils"/>
+    <param name="ios-package" value="CDVFile"/>
+  </feature>
+  <feature name="FileTransfer">
+    <param name="android-package" value="org.apache.cordova.FileTransfer"/>
+    <param name="ios-package" value="CDVFileTransfer"/>
   </feature>
 </widget>

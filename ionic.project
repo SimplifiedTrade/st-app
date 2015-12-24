@@ -15,5 +15,15 @@
   "watchPatterns": [
     "www/**/*",
     "!www/lib/**/*"
+  ],
+  "proxies": [
+    {
+      "path": "/dev/case",
+      "proxyUrl": "https://w6d5v9l2pi.execute-api.us-east-1.amazonaws.com/dev/case"
+    },
+    {
+      "path": "/auth/aws/s3",
+      "proxyUrl": "https://w6d5v9l2pi.execute-api.us-east-1.amazonaws.com/dev/auth/aws/s3"
+    }
   ]
 }

@@ -6,52 +6,62 @@
 		"strade.global.filters",
 		"ngCordova.plugins.badge",
 		"ngCordova.plugins.camera",
+		"ngCordova.plugins.file",
+		"ngCordova.plugins.fileTransfer",
 		"ngCordova.plugins.barcodeScanner"
 	]);
-	
+
+	module.config( function( $compileProvider ) {
+		$compileProvider.imgSrcSanitizationWhitelist( /^\s*(https?|ftp|mailto|file|tel|blob):|data:image\// );
+	});
 		
-	module.run( function( $window, $rootScope, $ionicPlatform, $state, $stateParams ) {
-		var win = $window;
-			
-		$rootScope.dataModelPristine = {
-			takePic: {
-				photoBase64: null,
-				location: null,
-				placement: {
-					lifecycle: null,
-					type: null,
-					options: null,
-					position: null
-				},
-				barcodeScan: {},
-				meta: {
-					caseCondition: null,
-					brand: null,
-					conditionTypes: null,
-					fixed: null,
-					time: null,
-					missing: null,
-					store: null,
-					space: null,
-					other: null
+	module.run( function( $window, $rootScope, $ionicPlatform, $state, $stateParams, lodash, stUtils ) {
+		var win = $window,
+			dataModelPristine = {
+				Case: {
+					id: null,
+					photoBase64: null,
+					photo: {
+						uri: null,
+						path: null,
+						file: null,
+						ext: null
+					},					
+					location: null,
+					placement: {
+						lifecycle: null,
+						type: null,
+						options: null,
+						position: null
+					},
+					barcodeScan: {},
+					meta: {
+						caseCondition: null,
+						brand: null,
+						conditionTypes: null,
+						fixed: null,
+						time: null,
+						missing: null,
+						store: null,
+						space: null,
+						other: null
+					}
 				}
-			}
-		};
+			};
+			
 		
 		$rootScope.dataModel = {};
 		
 		$rootScope.resetDataModel = function() {
-			
-			$rootScope.dataModel = ng.copy( $rootScope.dataModelPristine );
-			
+			var id = stUtils.uuid();
+			$rootScope.dataModel = lodash.merge( dataModelPristine, { Case: { id: id } } );
 		};
-		
+
 		$rootScope.resetDataModel();
-
-
+		
 	});
 	
-	module.controller( "AppCtrl", function( $scope, $rootScope, $ionicModal, $timeout ) {
+	module.controller( "AppCtrl", function( $scope, $rootScope, $ionicModal, $timeout, Data ) {
 
 		// With the new view caching in Ionic, Controllers are only called
 		// when they are recreated or on app start, instead of every page change.
@@ -88,13 +98,40 @@
 				$scope.closeLogin();
 			}, 1000 );
 		};
+		
+		
+		
+		// !!!!!! DEBUG !!!!!!!!!!!!!
+		$scope.doS3Auth = function() {
+			var fileObj = {
+					uri: "file:///data/data/com.ionicframework.app822945/files/e0b4b5f5-752c-45b0-9c81-7b3b102c838e.jpg",
+					path: "file:///data/data/com.ionicframework.app822945/files/",
+					file: "e0b4b5f5-752c-45b0-9c81-7b3b102c838e.jpg",
+					ext: "jpg"
+				},
+				// filePart = fileObj.file.substr( 0, fileObj.file.lastIndexOf( "." ) ) || fileObj.file;
+				path = "_NEW/" + fileObj.file;
+			
+			
+			console.info( "doS3Auth CLICKED: ", path );
+			
+			Data.Case.saveImg( path, fileObj.uri );
+		};
 	});
 
 	module.controller( "NewCaseCtrl", function( $scope, $rootScope, $state ) {
+		
+		
+		$scope.$on( "$ionicView.enter", function( e ) {
+			
+			// Clear out the model
+			$rootScope.resetDataModel();
+			
+			console.warn( "+++ ENTER: ", $rootScope.dataModel );
+		});
 
 		$scope.startNewCase = function() {
 			$state.go( "app.location" );
-
 		};
 
 	});
@@ -107,7 +144,7 @@
 			};
 
 		$scope.data = {
-			location: $rootScope.dataModel.takePic.location
+			location: $rootScope.dataModel.Case.location
 		};
 
 		ng.extend( $scope, {
@@ -172,20 +209,26 @@
 		*/
 	});
 	
-	module.controller( "TakePicCtrl", function( $scope, $rootScope, $state, $cordovaCamera, $window ) {
+	module.controller( "TakePicCtrl", function( $scope, $rootScope, $state, $cordovaCamera, $window, $cordovaFile, stUtils, lodash ) {
 
 		var options = {},
 			hasCamera = !!$window.Camera;
 			
 		$scope.data = {
-			photoBase64: $rootScope.dataModel.takePic.photoBase64
+			photoBase64: $rootScope.dataModel.Case.photoBase64
+		};
+		
+		$scope.urlForImage = function() {
+			
 		};
 
 		if ( hasCamera ) {
 			options = {
 				quality: 50,
-				destinationType: Camera.DestinationType.DATA_URL,
 				sourceType: Camera.PictureSourceType.CAMERA,
+				// destinationType: Camera.DestinationType.DATA_URL,
+				destinationType: Camera.DestinationType.FILE_URI,
+				
 				allowEdit: false,
 				encodingType: Camera.EncodingType.JPEG,
 				// targetWidth: 200,
@@ -193,18 +236,48 @@
 				popoverOptions: CameraPopoverOptions,
 				// saveToPhotoAlbum: false,
 				correctOrientation:true
-			};			
+			};
 		}
 
 		$scope.takePic = function() {
 			$cordovaCamera.getPicture( options ).then( function( imageData ) {
-				// $scope.picCaptured = "data:image/jpeg;base64," + imageData;
-								
-				$rootScope.dataModel.takePic.photoBase64 = $scope.data.photoBase64 = imageData;
+		        var id = lodash.get( $rootScope, "dataModel.Case.id" ),
+					fileName = imageData.substr( imageData.lastIndexOf( "/" ) + 1 ),
+					filePath = imageData.substr( 0, imageData.lastIndexOf( "/" ) + 1 ),
+					fileExt = fileName.replace( /^.*\./, "" ),
+					fileNewName = ( id ) ? id + "." + fileExt : fileName;
+					
+				console.info( [ fileName, filePath, fileExt, fileNewName ].join( "\n" ) );
 				
+				$cordovaFile.moveFile( filePath, fileName, cordova.file.dataDirectory, fileNewName ).then( function( info ) {
+
+					$rootScope.dataModel.Case.photo = {
+						uri: info.toURL(),
+						path: cordova.file.dataDirectory,
+						file: fileNewName,
+						ext: fileExt
+					};
+
+					if ( !stUtils.isLiveReload ) {
+						// Normal case, webview can read from "file:///"
+						$scope.data.photoUri = info.toURL();
+					} else {
+						// return a b46 image URI: only needed during DEV, using livereload
+						$cordovaFile.readAsDataURL( cordova.file.dataDirectory, fileNewName ).then( function( dataUri ) {
+							console.info( arguments );
+							if ( !lodash.isEmpty( dataUri ) ) {
+								$scope.data.photoUri = dataUri;
+							} else {
+								// show placeholder image
+							}
+						});
+					}
+					// console.info( "SETTING SRC: ", $scope.data.photoUri );
+				}, function( e ) {
+					console.info( "FILE ERROR: ", e );
+				});				
 			}, function( err ) {
 				// error
-
 				console.info( "IMAGE CAPTURE ERROR: ", err );
 
 			});
@@ -220,11 +293,11 @@
 	module.controller( "PlacementTypeCtrl", function( $scope, $rootScope, $state ) {
 
 		$scope.data = {
-			placement: $rootScope.dataModel.takePic.placement
+			placement: $rootScope.dataModel.Case.placement
 		};
 
 		$scope.savePlacement = function() {
-			$state.go( "app.placementOpts", { type: $rootScope.dataModel.takePic.placement.type } );
+			$state.go( "app.placementOpts", { type: $rootScope.dataModel.Case.placement.type } );
 		};
 
 	});
@@ -232,7 +305,7 @@
 	module.controller( "PlacementOptsCtrl", function( $scope, $rootScope, $state, $stateParams, lodash ) {
 
 		$scope.data = {
-			placement: $rootScope.dataModel.takePic.placement
+			placement: $rootScope.dataModel.Case.placement
 		};
 
 		ng.extend( $scope, {
@@ -262,7 +335,7 @@
 
 		$scope.selectPlacementPos = function( type ) {
 			
-			$rootScope.dataModel.takePic.placement.position = type;
+			$rootScope.dataModel.Case.placement.position = type;
 			
 			$state.go( "app.scanBarcode" );
 		};
@@ -273,7 +346,7 @@
 		
 		
 		$scope.data = {
-			barcodeScan: $rootScope.dataModel.takePic.barcodeScan
+			barcodeScan: $rootScope.dataModel.Case.barcodeScan
 		};
 
 		console.info( "$cordovaBarcodeScanner: ", JSON.stringify( $cordovaBarcodeScanner ) );
@@ -284,7 +357,7 @@
 				if ( !scanData.cancelled ) {
 					$scope.barcodeScanned = true;
 					
-					$rootScope.dataModel.takePic.barcodeScan = $scope.data.barcodeScan = scanData;
+					$rootScope.dataModel.Case.barcodeScan = $scope.data.barcodeScan = scanData;
 					
 					console.info( "imageData: ", JSON.stringify( scanData ) );
 					
@@ -317,8 +390,8 @@
 	module.controller( "CaseMetaCtrl", function( $scope, $rootScope, $state ) {
 				
 		$scope.data = {
-			placement: $rootScope.dataModel.takePic.placement,
-			meta: $rootScope.dataModel.takePic.meta
+			placement: $rootScope.dataModel.Case.placement,
+			meta: $rootScope.dataModel.Case.meta
 		};
 		
 		
@@ -332,19 +405,27 @@
 		};
 	});
 
-	module.controller( "SummaryCtrl", function( $scope, $rootScope, $state ) {
+	module.controller( "SummaryCtrl", function( $scope, $rootScope, $state, Data ) {
 		
 		
-		var summary = ng.copy( $rootScope.dataModel.takePic );
+		var summary = ng.copy( $rootScope.dataModel.Case );
 		
-		summary.photoBase64 = String( summary.photoBase64 ).substring( 0, 10 ).concat( "..." ).replace( "null", "" );
+		//summary.photoBase64 = String( summary.photoBase64 ).substring( 0, 10 ).concat( "..." ).replace( "null", "" );
 		
 		$scope.data = {
 			summary: summary
 		}
 		
 		$scope.saveAll = function() {
-			$state.go( "app.home" );
+			
+			Data.save( summary ).then( function( resp ) {
+				
+				//console.info( "Data.save: ", JSON.stringify( resp, null, 4 ) );
+				
+				$state.go( "app.home" );
+			});
+			
+			
 		};
 		
 		$scope.saveAndRestart = function() {
