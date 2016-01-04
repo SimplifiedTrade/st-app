@@ -46,70 +46,93 @@
 				headers: {
 					"x-api-key": "Ox20tJjYpk177MKjMpoyz7Ka3m960Xzj6x2FLUsK"
 				},
+				// TODO: This needs to be adjusted (lowered)
 				timeout: 99000
 			},
 			getS3Sig = function( fileName ) {
 				var url = "/auth/aws/s3";				
 				return $http.post( url, { fileName: fileName }, config );
+			},
+			saveData = function( data ) {
+				var url = "/dev/case",
+					id = data.id;
+			
+				console.info( "SAVE CALLED...", data );
+			
+				return $http.post( url, { id: id, caseData: data }, config ).then( function( resp ) {
+				
+					console.info( "API GATEWAY CALL: ", resp );
+				
+					return resp;
+				});
+			},
+			saveImg = function( fileName, imageURI ) {
+				fileName = "_NEW/" + fileName;
+				
+				return getS3Sig( fileName ).then( function( resp ) {
+					var data = resp.data,
+						s3Url = "https://" + data.bucket + ".s3.amazonaws.com/",
+						cFileTransfer;
+						
+					// console.info( "S3 AUTH: ", data );
+					// return;
+					
+		            var optsUpld = {
+			            fileKey: "file",
+			            fileName: data.fileName,
+			            mimeType: "image/jpeg",
+			            chunkedMode: false,
+			            headers: {
+			                connection: "close"
+			            },
+			            params: {
+			                key: data.fileName,
+			                AWSAccessKeyId: data.awsKey,
+			                acl: "private",
+			                policy: data.policy,
+			                signature: data.signature,
+			                "Content-Type": "image/jpeg"
+			            }
+		            };
+
+					cFileTransfer = $cordovaFileTransfer.upload( s3Url , imageURI, optsUpld ).then( function( result ) {
+						
+						console.info( "UPLOAD SUCCESS: ", result );
+						return result;
+					}, function( err ) {
+						
+						console.error( "UPLOAD ERROR: ", err );
+						return err;
+					}, function( progress ) {
+						
+						console.info( "PROGRESS: ", progress )
+						return progress;
+					});
+					
+					return cFileTransfer;
+				});
 			};
 
 		return {
 			
 			Case: {
-				saveData: function( data ) {
-					var url = "/dev/case";
-				
-					console.info( "SAVE CALLED..." );
-				
-					return $http.post( url, { caseData: data }, config ).then( function( resp ) {
+				save: function( data ) {
 					
-						console.info( "API GATEWAY CALL: ", resp );
+					// DEBUG ***
+					// return $q.resolve();
 					
-						return resp;
-					});
-				},
-				saveImg: function( fileName, imageURI ) {
-					return getS3Sig( fileName ).then( function( resp ) {
-						var data = resp.data,
-							s3Url = "https://" + data.bucket + ".s3.amazonaws.com/",
-							cFileTransfer;
-							
-						// console.info( "S3 AUTH: ", data );
-						// return;
+					return $q( function( resolve, reject ) {
 						
-			            var optsUpld = {
-				            fileKey: "file",
-				            fileName: data.fileName,
-				            mimeType: "image/jpeg",
-				            chunkedMode: false,
-				            headers: {
-				                connection: "close"
-				            },
-				            params: {
-				                key: data.fileName,
-				                AWSAccessKeyId: data.awsKey,
-				                acl: "private",
-				                policy: data.policy,
-				                signature: data.signature,
-				                "Content-Type": "image/jpeg"
-				            }
-			            };
+						console.info( "DATA: ", data );
+						
+						var s3Path = data.photo.file,
+							promises = [
+								saveImg( s3Path, data.photo.uri ),
+								saveData( data )
+							];
 
-						cFileTransfer = $cordovaFileTransfer.upload( s3Url , imageURI, optsUpld ).then( function( result ) {
-							
-							console.info( "UPLOAD SUCCESS: ", result );
-							return result;
-						}, function( err ) {
-							
-							console.error( "UPLOAD ERROR: ", err );
-							return err;
-						}, function( progress ) {
-							
-							console.info( "PROGRESS: ", progress )
-							return progress;
-						});
-						
-						return cFileTransfer;
+						return $q.all( promises ).then( resolve, reject );
+						// return $timeout( resolve, 2000 );
 					});
 				}
 			}

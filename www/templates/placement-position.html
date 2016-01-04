@@ -1,7 +1,9 @@
 <ion-view view-title="Placement">
 	<ion-content has-bouncing="true" padding="true">
-		<h1>Select Placement</h1>
+		<h1>Placement Position</h1>
 
+
+		<!--
 		<div class="placement-pos-selector">
 			<div class="square">
 				<div class="content">
@@ -93,6 +95,7 @@
 				</div>
 			</div>
 		</div>
+		-->
 
 
 
@@ -105,78 +108,90 @@
 
 
 
-		<!--
+
 		<table class="placement-pos-selector">
 			<tr>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('BL')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'BL'), 'button-balanced': (data.placementPos === 'BL')}" ng-click="data.placementPos = 'BL'">
 						BACK<br>
 						LEFT
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="BL">
+						<label></label>
+					</button>
 				</td>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('BC')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'BC'), 'button-balanced': (data.placementPos === 'BC')}" ng-click="data.placementPos = 'BC'">
 						BACK<br>
 						CENTER
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="BC">
+						<label></label>
+					</button>
 				</td>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('BR')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'BR'), 'button-balanced': (data.placementPos === 'BR')}" ng-click="data.placementPos = 'BR'">
 						BACK<br>
 						RIGHT
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="BR">
+						<label></label>
+					</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('ML')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'ML'), 'button-balanced': (data.placementPos === 'ML')}" ng-click="data.placementPos = 'ML'">
 						MIDDLE<br>
 						LEFT
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="ML">
+						<label></label>
+					</button>
 				</td>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('C')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'C'), 'button-balanced': (data.placementPos === 'C')}" ng-click="data.placementPos = 'C'">
 						CENTER
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="C">
+						<label></label>
+					</button>
 				</td>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('MR')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'MR'), 'button-balanced': (data.placementPos === 'MR')}" ng-click="data.placementPos = 'MR'">
 						MIDDLE<br>
 						RIGHT
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="MR">
+						<label></label>
+					</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('FL')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'FL'), 'button-balanced': (data.placementPos === 'FL')}" ng-click="data.placementPos = 'FL'">
 						FRONT<br>
 						LEFT
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="FL">
+						<label></label>
+					</button>
 				</td>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('FC')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'FC'), 'button-balanced': (data.placementPos === 'FC')}" ng-click="data.placementPos = 'FC'">
 						FRONT<br>
 						CENTER
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="FC">
+						<label></label>
+					</button>
 				</td>
 				<td>
-					<a href="" class="placement-pos" ng-click="selectPlacementPos('FR')">
+					<button class="button button-block" ng-class="{'button-calm':(data.placementPos !== 'FR'), 'button-balanced': (data.placementPos === 'FR')}" ng-click="data.placementPos = 'FR'">
 						FRONT<br>
 						RIGHT
-					</a>
+						<input type="radio" name="placementType" class="rdo-chkbx" ng-model="data.placementPos" value="FR">
+						<label></label>
+					</button>
 				</td>
 			</tr>
 		</table>
-		 -->
+
 		
-		
-		
-		
-		
-		
-		
-		
-		
+		<button class="button button-block button-positive" ng-click="savePlacementPos()">Next <i class="ion-chevron-right"></i></button>
+
 				
 	</ion-content>
 </ion-view>

@@ -1,13 +1,41 @@
 <ion-view view-title="Summary">
 	<ion-content has-bouncing="true" padding="true">
 
-<!--	
+<!--
 <pre>
-{{ data.summary | json:4 }}	
-	
-	
+{{ data | json:4 }}	
 </pre>
 -->
+	
+		<h4>Location</h4>
+		<p>{{ data.summary.location.selectedLoc.desc }}</p>
+		<hr>	
+	
+	
+		<h4>Photo</h4>
+		<img class="full-image" ng-show="!!data.summary.photoUri" ng-src="{{data.summary.photoUri}}" />
+		<hr>
+	
+	
+		<h4>Placement</h4>
+		<dl>			
+			<dt>lifecycle</dt>
+			<dd>{{ data.summary.placement.lifecycle }}</dd>
+			
+			<dt>Type</dt>
+			<dd>{{ data.summary.placement.type }}</dd>
+			
+			<dt>Options</dt>
+			<dd>{{ data.summary.placement.options }}</dd>
+			
+			<dt>Position</dt>
+			<dd>{{ data.summary.placement.position }}</dd>
+		</dl>
+		<hr>
+		
+	
+		<h4>Barcode Scan</h4>
+		<p>{{ data.summary.barcodeScan }}</p>
 	
 
 		<button class="button button-block button-positive" ng-click="saveAll()">Save</button>

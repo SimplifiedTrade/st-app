@@ -20,14 +20,21 @@
 			dataModelPristine = {
 				Case: {
 					id: null,
-					photoBase64: null,
 					photo: {
 						uri: null,
 						path: null,
 						file: null,
 						ext: null
 					},					
-					location: null,
+					location: {
+						userLoc: {
+							coords: null,
+						},
+						selectedLoc: {
+							desc: null,
+							coords: null
+						}
+					},
 					placement: {
 						lifecycle: null,
 						type: null,
@@ -52,13 +59,24 @@
 		
 		$rootScope.dataModel = {};
 		
-		$rootScope.resetDataModel = function() {
+		$rootScope.resetDataModel = function( keepPartData ) {
 			var id = stUtils.uuid();
-			$rootScope.dataModel = lodash.merge( dataModelPristine, { Case: { id: id } } );
+			
+			if ( !keepPartData ) {
+				$rootScope.dataModel = lodash.merge( dataModelPristine, { Case: { id: id } } );
+			} else {
+				// Allows us to keep partial data from previous model
+				$rootScope.dataModel = lodash.merge( $rootScope.dataModel, {
+					Case: {
+						id: id,
+						photo: lodash.copyDeep( dataModelPristine.Case.photo ),
+					}
+				});
+			}
 		};
 
 		$rootScope.resetDataModel();
-		
+
 	});
 	
 	module.controller( "AppCtrl", function( $scope, $rootScope, $ionicModal, $timeout, Data ) {
@@ -100,6 +118,25 @@
 		};
 		
 		
+		// On ANY View:ENTER
+		$rootScope.$on( "$ionicView.enter", function( e, view ) {
+			console.warn( "ANY PAGE ENTER: ", arguments );
+			
+			switch ( view.stateId ) {
+				
+				
+				// Fall through - reset model
+				case "app.home":
+				case "app.newCase":
+				case "":
+					// Clear out the model
+					console.info( "CLEARING MODEL..." );
+					$rootScope.resetDataModel();
+					break;
+			}
+		});
+		
+		
 		
 		// !!!!!! DEBUG !!!!!!!!!!!!!
 		$scope.doS3Auth = function() {
@@ -120,15 +157,10 @@
 	});
 
 	module.controller( "NewCaseCtrl", function( $scope, $rootScope, $state ) {
-		
-		
-		$scope.$on( "$ionicView.enter", function( e ) {
-			
-			// Clear out the model
-			$rootScope.resetDataModel();
-			
-			console.warn( "+++ ENTER: ", $rootScope.dataModel );
-		});
+				
+		// $scope.$on( "$ionicView.enter", function( e, view ) {
+		// 	console.warn( "+++ ENTER: ", $rootScope.dataModel );
+		// });
 
 		$scope.startNewCase = function() {
 			$state.go( "app.location" );
@@ -156,7 +188,16 @@
 			selectLocation: function( loc ) {
 
 				console.info( "ITEM SELECTED: ", loc );
-				$scope.data.location = loc;
+				$rootScope.dataModel.Case.location = $scope.data.location = {
+					userLoc: {
+						coords: $scope.coords,
+					},
+					// TODO: TEMP, replace with item selected
+					selectedLoc: {
+						desc: "Store Location #" + loc,
+						coords: $scope.coords
+					}
+				};
 
 				$state.go( "app.takePic" );
 			}
@@ -212,11 +253,30 @@
 	module.controller( "TakePicCtrl", function( $scope, $rootScope, $state, $cordovaCamera, $window, $cordovaFile, stUtils, lodash ) {
 
 		var options = {},
-			hasCamera = !!$window.Camera;
+			hasCamera = !!$window.Camera,
+			getPhotoAsUri = function( fileDir, fileName ) {
+				return $cordovaFile.readAsDataURL( fileDir, fileName ).then( function( dataUri ) {
+					if ( !lodash.isEmpty( dataUri ) ) {
+						$scope.data.photoUri = dataUri;
+					} else {
+						// show placeholder image
+					}
+				});
+			},
+			dataPhoto = $rootScope.dataModel.Case.photo;
 			
+						
 		$scope.data = {
-			photoBase64: $rootScope.dataModel.Case.photoBase64
+			// photoUri: $rootScope.dataModel.Case.photoUri
+			photoUri: null
 		};
+		
+		// If Livereload and photo wasn't cleared, load it with DataURI
+		if ( stUtils.isLiveReload && lodash.isEmpty( $scope.data.photoUri ) ) {
+			if ( !lodash.isEmpty( dataPhoto.file ) && !lodash.isEmpty( dataPhoto.path ) ) {
+				getPhotoAsUri( dataPhoto.path, dataPhoto.file );	
+			}
+		}
 		
 		$scope.urlForImage = function() {
 			
@@ -263,14 +323,17 @@
 						$scope.data.photoUri = info.toURL();
 					} else {
 						// return a b46 image URI: only needed during DEV, using livereload
-						$cordovaFile.readAsDataURL( cordova.file.dataDirectory, fileNewName ).then( function( dataUri ) {
-							console.info( arguments );
-							if ( !lodash.isEmpty( dataUri ) ) {
-								$scope.data.photoUri = dataUri;
-							} else {
-								// show placeholder image
-							}
-						});
+						
+						getPhotoAsUri( cordova.file.dataDirectory, fileNewName );
+												
+						// $cordovaFile.readAsDataURL( cordova.file.dataDirectory, fileNewName ).then( function( dataUri ) {
+						// 	console.info( arguments );
+						// 	if ( !lodash.isEmpty( dataUri ) ) {
+						// 		$scope.data.photoUri = dataUri;
+						// 	} else {
+						// 		// show placeholder image
+						// 	}
+						// });
 					}
 					// console.info( "SETTING SRC: ", $scope.data.photoUri );
 				}, function( e ) {
@@ -332,14 +395,14 @@
 
 	module.controller( "PlacementPositionCtrl", function( $scope, $rootScope, $state ) {
 
-
-		$scope.selectPlacementPos = function( type ) {
-			
-			$rootScope.dataModel.Case.placement.position = type;
-			
-			$state.go( "app.scanBarcode" );
+		$scope.data = {
+			placementPos: $rootScope.dataModel.Case.placement.position
 		};
 
+		$scope.savePlacementPos = function() {
+			$rootScope.dataModel.Case.placement.position = $scope.data.placementPos;
+			$state.go( "app.scanBarcode" );
+		};
 	});
 	
 	module.controller( "ScanBarcodeCtrl", function( $scope, $rootScope, $state, $cordovaBarcodeScanner ) {
@@ -405,33 +468,36 @@
 		};
 	});
 
-	module.controller( "SummaryCtrl", function( $scope, $rootScope, $state, Data ) {
-		
-		
-		var summary = ng.copy( $rootScope.dataModel.Case );
+	module.controller( "SummaryCtrl", function( $scope, $rootScope, $state, Data, lodash ) {
+
+		var summary = lodash.cloneDeep( $rootScope.dataModel.Case );
 		
 		//summary.photoBase64 = String( summary.photoBase64 ).substring( 0, 10 ).concat( "..." ).replace( "null", "" );
 		
+		console.info( "SUMMARY: ", summary, lodash.cloneDeep( $rootScope.dataModel.Case ) );
+		
 		$scope.data = {
 			summary: summary
+			// summary: $rootScope.dataModel.Case
 		}
 		
 		$scope.saveAll = function() {
-			
-			Data.save( summary ).then( function( resp ) {
+			Data.Case.save( summary ).then( function( resp ) {
 				
-				//console.info( "Data.save: ", JSON.stringify( resp, null, 4 ) );
+				console.info( "Data.save: ", arguments );
 				
 				$state.go( "app.home" );
+			}, function( err ) {
+				
+				console.info( "ERROR: SAVE ALL: ", arguments );
+				
 			});
-			
-			
 		};
 		
 		$scope.saveAndRestart = function() {
-			// DEBUG: Disabled for web debugging.
-			// $state.go( "app.takePic" );
-			$state.go( "app.location" );
+			// $state.go( "app.location" );
+			$rootScope.resetDataModel( true );
+			$state.go( "app.takePic" );
 		};
 
 	});
