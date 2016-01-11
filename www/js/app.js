@@ -31,8 +31,21 @@
 				url: "/search",
 				views: {
 					"menuContent": {
-						templateUrl: "templates/search.html"
+						templateUrl: "templates/search.html",
+						controller: "SearchCtrl"
 					}
+				}
+			})
+			.state( "app.searchAdv", {
+				url: "/search",
+				views: {
+					"menuContent": {
+						templateUrl: "templates/search-advanced.html",
+						controller: "SearchCtrl"
+					}
+				},
+				params: {
+					searchType: null
 				}
 			})
 			.state( "app.newCase", {

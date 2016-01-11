@@ -79,7 +79,7 @@
 
 	});
 	
-	module.controller( "AppCtrl", function( $scope, $rootScope, $ionicModal, $timeout, Data ) {
+	module.controller( "AppCtrl", function( $scope, $rootScope, $ionicModal, $timeout, $ionicHistory, Data ) {
 
 		// With the new view caching in Ionic, Controllers are only called
 		// when they are recreated or on app start, instead of every page change.
@@ -87,6 +87,9 @@
 		// listen for the $ionicView.enter event:
 		//$scope.$on('$ionicView.enter', function(e) {
 		//});
+		
+		// Clear "back" button history
+		$ionicHistory.clearHistory();
 
 		// Form data for the login modal
 		$scope.loginData = {};
@@ -154,6 +157,70 @@
 			
 			Data.Case.saveImg( path, fileObj.uri );
 		};
+		$scope.doPost = function() {
+			var id = stUtils.uuid(),
+				tempdata = {
+					"id": id,
+					"photo": {
+						"uri": "file:///data/data/com.ionicframework.app822945/files/24bf4cd9-cb64-4029-b9f9-ab8ff3b52d7b.jpg",
+						"path": "file:///data/data/com.ionicframework.app822945/files/",
+						"file": "24bf4cd9-cb64-4029-b9f9-ab8ff3b52d7b.jpg",
+						"ext": "jpg"
+					},
+					"location": {
+						"userLoc": {
+							"coords": {
+								"lat": 34.0486953,
+								"long": -118.2485051
+							}
+						},
+						"selectedLoc": {
+							"desc": "Store Location #3",
+							"coords": {
+								"lat": 34.0486953,
+								"long": -118.2485051
+							}
+						}
+					},
+					"placement": {
+						"lifecycle": "standard",
+						"type": "rack",
+						"options": {
+							"condition": "good",
+							"size": "small"
+						},
+						"position": "BR"
+					},
+					"barcodeScan": {},
+					"meta": {
+						"caseCondition": "issue",
+						"brand": null,
+						"conditionTypes": {
+							"9": {
+								"option": true
+							}
+						},
+						"fixed": null,
+						"time": null,
+						"missing": null,
+						"store": null,
+						"space": null,
+						"other": null
+					}
+				};
+			
+			Data.Case.saveData( tempdata ).then( function( resp ) {
+				
+				console.info( "Data.save: ", arguments );
+				
+				// $state.go( "app.home" );
+			}, function( err ) {
+				
+				console.info( "ERROR: SAVE ALL: ", arguments );
+				
+			});
+		};
+		
 	});
 
 	module.controller( "NewCaseCtrl", function( $scope, $rootScope, $state ) {
@@ -168,7 +235,7 @@
 
 	});
 	
-	module.controller( "LocationCtrl", function( $scope, $rootScope, $state, $cordovaGeolocation, $ionicLoading ) {
+	module.controller( "LocationCtrl", function( $scope, $rootScope, $state, $cordovaGeolocation, $ionicLoading, $ionicScrollDelegate ) {
 
 		var posOptions = {
 				timeout: 10000,
@@ -202,7 +269,10 @@
 				$state.go( "app.takePic" );
 			}
 		});
-
+		
+		$scope.scrollTop = function() {
+			$ionicScrollDelegate.scrollTop();
+		};
 
 		$scope.getLoc().then( function( position ) {
 			var lat = position.coords.latitude,
@@ -501,6 +571,55 @@
 		};
 
 	});
+
+
+
+
+
+	module.controller( "SearchCtrl", function( $scope, $rootScope, $state, $stateParams, Data, lodash, $ionicScrollDelegate ) {
+
+		$scope.stateParams = $stateParams;
+		
+		$scope.searchParams = {};
+
+		$scope.scrollTop = function() {
+			$ionicScrollDelegate.scrollTop();
+		};
+
+		$scope.showAdvSetting = function( type ) {
+			
+			$state.go( "app.searchAdv", { searchType: type } );
+
+		}
+		
+		console.info( "SCOPE: ", $scope );
+
+		$scope.onSubmit = function() {
+			var self = this;
+			
+			console.info( "frmSearch: ", self.searchParams );
+			
+			Data.Case.search( self.searchParams ).then( function( data ) {
+				
+				console.info( "SEARCH RESPONSE: ", data );
+				
+			});
+			
+			
+		};
+
+
+	});
+
+
+
+
+
+
+
+
+
+
 
 
 })( angular );

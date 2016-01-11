@@ -1,5 +1,63 @@
 <ion-view view-title="Search">
-  <ion-content has-bouncing="true">
-    <h1>Search</h1>
-  </ion-content>
+	<ion-content has-bouncing="true" padding="false">
+		
+		<form name="frmSearch" class="list" ng-submit="onSubmit()">
+
+			<div class="item item-input-inset">
+				<label class="item-input-wrapper">
+					<i class="icon ion-search placeholder-icon"></i>
+					<input type="text" name="q" ng-model="searchParams.q" placeholder="Search">
+				</label>
+				<button type="submit" class="button button-small">Go</button>
+			</div>
+			
+			
+			
+			<div class="item item-divider">Advanced Search</div>
+			
+			<div class="item item-input-inset">
+				<div class="row">
+					<div class="col">
+						<label>
+							<input type="radio" value="picture" ng-model="searchType"> Picture
+						</label>
+					</div>
+					<div class="col">
+						<label>
+							<input type="radio" value="pog" ng-model="searchType"> POG
+						</label>
+					</div>
+					<div class="col">
+						<label>
+							<input type="radio" value="survey" ng-model="searchType"> Survey
+						</label>
+					</div>
+				</div>
+			</div>
+			
+			
+			
+			<ion-list ng-show="!coordsLoading">
+				<ion-item class="item item-icon-right" item="item" ng-click="showAdvSetting('account')" ng-tap="showAdvSetting('account')">
+					Account: NONE <i class="icon ion-chevron-right icon-accessory"></i>
+				</ion-item>
+				<ion-item class="item item-icon-right" item="item" ng-click="showAdvSetting('section')" ng-tap="showAdvSetting('section')">
+					Section: NONE <i class="icon ion-chevron-right icon-accessory"></i>
+				</ion-item>
+				<ion-item class="item item-icon-right" item="item" ng-click="showAdvSetting('address')" ng-tap="showAdvSetting('address')">
+					Address: NONE <i class="icon ion-chevron-right icon-accessory"></i>
+				</ion-item>
+				<ion-item class="item item-icon-right" item="item" ng-click="showAdvSetting('date')" ng-tap="showAdvSetting('date')">
+					Date Range: NONE <i class="icon ion-chevron-right icon-accessory"></i>
+				</ion-item>
+				<ion-item class="item item-icon-right" item="item" ng-click="showAdvSetting('placement')" ng-tap="showAdvSetting('placement')">
+					Placement Type: NONE <i class="icon ion-chevron-right icon-accessory"></i>
+				</ion-item>
+			</ion-list>
+			
+			
+		</form>		
+		
+
+	</ion-content>
 </ion-view>

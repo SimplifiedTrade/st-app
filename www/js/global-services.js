@@ -3,6 +3,7 @@
 	var module = ng.module( "strade.global.services", [
 	]);
 	
+	
 	/**
 	* Service Lodash Wrapper
 	*
@@ -45,21 +46,23 @@
 		var config = {
 				headers: {
 					"x-api-key": "Ox20tJjYpk177MKjMpoyz7Ka3m960Xzj6x2FLUsK"
-				},
-				// TODO: This needs to be adjusted (lowered)
-				timeout: 99000
+				}
 			},
 			getS3Sig = function( fileName ) {
 				var url = "/auth/aws/s3";				
 				return $http.post( url, { fileName: fileName }, config );
 			},
 			saveData = function( data ) {
-				var url = "/dev/case",
-					id = data.id;
+				var id = data.id,
+					url = "/cases/" + id,
+					postObj = {
+						caseId: id,
+						payload: data				
+					};
 			
-				console.info( "SAVE CALLED...", data );
+				console.info( "SAVE CALLED...", id, data );
 			
-				return $http.post( url, { id: id, caseData: data }, config ).then( function( resp ) {
+				return $http.post( url, postObj, config ).then( function( resp ) {
 				
 					console.info( "API GATEWAY CALL: ", resp );
 				
@@ -111,6 +114,29 @@
 					
 					return cFileTransfer;
 				});
+			},
+			search = function( params ) {
+				var url = "/search";
+					// params = {
+					// 	q: term
+					// };
+
+
+				return $http.get( url, ng.extend( {}, config, { params: params } ) ).then( function( resp ) {
+					var obj, output;
+				
+					console.info( "API GATEWAY CALL: ", resp );
+					
+					if ( resp.status === 200 && resp.data ) {
+						
+						try {
+							obj = JSON.parse( resp.data );
+							output = obj.hits.hits;
+						} catch ( ex ) {}
+					}
+					
+					return output;
+				});
 			};
 
 		return {
@@ -134,7 +160,10 @@
 						return $q.all( promises ).then( resolve, reject );
 						// return $timeout( resolve, 2000 );
 					});
-				}
+				},
+				saveData: saveData,
+				saveImg: saveImg,
+				search: search
 			}
 		};
 		

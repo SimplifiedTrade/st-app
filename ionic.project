@@ -18,8 +18,16 @@
   ],
   "proxies": [
     {
-      "path": "/dev/case",
+      "path": "/search",
+      "proxyUrl": "https://w6d5v9l2pi.execute-api.us-east-1.amazonaws.com/dev/search"
+    },
+    {
+      "path": "/case",
       "proxyUrl": "https://w6d5v9l2pi.execute-api.us-east-1.amazonaws.com/dev/case"
+    },
+    {
+      "path": "/cases",
+      "proxyUrl": "https://w6d5v9l2pi.execute-api.us-east-1.amazonaws.com/dev/cases"
     },
     {
       "path": "/auth/aws/s3",
