@@ -1,13 +1,6 @@
 {
   "name": "Simplified Trade",
   "app_id": "",
-  "browsers": [
-    {
-      "platform": "android",
-      "browser": "crosswalk",
-      "version": "12.41.296.5"
-    }
-  ],
   "gulpStartupTasks": [
     "sass",
     "watch"
@@ -32,6 +25,13 @@
     {
       "path": "/auth/aws/s3",
       "proxyUrl": "https://w6d5v9l2pi.execute-api.us-east-1.amazonaws.com/dev/auth/aws/s3"
+    }
+  ],
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
     }
   ]
 }
